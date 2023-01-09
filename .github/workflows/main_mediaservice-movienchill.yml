@@ -50,4 +50,4 @@ jobs:
           app-name: 'mediaService-movieNChill'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F780357F44A1420C9EAD2679253D798A }}
-          package: ./target
+          package: ./target/*.jar
