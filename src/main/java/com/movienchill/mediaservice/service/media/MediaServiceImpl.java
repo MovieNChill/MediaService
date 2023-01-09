@@ -37,7 +37,7 @@ public class MediaServiceImpl implements MediaService {
             try {
                 listMedia = mediaDAO.findAll(PageRequest.of(filter.getNumberPage(), filter.getNumberElement()));
             } catch (Exception e) {
-                log.error("An error occured while retrieving medias");
+                log.error("An error occured while retrieving medias : {}", e.getMessage());
             }
 
             if (listMedia != null && listMedia.getSize() > 0) {
@@ -45,7 +45,7 @@ public class MediaServiceImpl implements MediaService {
                 return Mapper.mapList(listMedia.stream().toList(), MediaDTO.class);
             }
         } else {
-            log.error("An error occured during the analysis of filter");
+            log.error("An error occurred during the analysis of filter");
             return null;
         }
 
@@ -54,16 +54,34 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public MediaDTO findById(Long id) {
+        try {
+            if (mediaDAO.findById(id).isPresent()) {
+                return Mapper.map(mediaDAO.findById(id).get(), MediaDTO.class);
+            } else {
+                log.error("The media is not present in DB");
+            }
+        } catch (Exception e) {
+            log.error("An error occured while retrieving media id=[{}] : {} ", id, e.getMessage());
+        }
+
         return null;
     }
 
     @Override
-    public MediaDTO save(Media entity) {
-        return null;
+    public void save(Media entity) {
+        try {
+            mediaDAO.save(entity);
+        } catch (Exception e) {
+            log.error("Error while saving the entity : {}", e.getMessage());
+        }
     }
 
     @Override
     public void delete(Media entity) {
-
+        try {
+            mediaDAO.delete(entity);
+        } catch (Exception e) {
+            log.error("Error while deleting the entity : {}", e.getMessage());
+        }
     }
 }
