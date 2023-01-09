@@ -10,6 +10,7 @@ public class MediaDTO {
     private Long id;
     private String type;
     private String name;
+    private List<String> genre;
     private Date releaseDate;
     private String director;
     private List<String> writers;

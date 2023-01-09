@@ -59,4 +59,9 @@ public class MediaRestController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping
+    public String HelloWorld() {
+        return "Hello World";
+    }
 }

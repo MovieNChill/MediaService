@@ -20,6 +20,9 @@ public class Media {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "genre")
+    private String genre;
+
     @Column(name = "release_date")
     private Date releaseDate;
 
