@@ -15,4 +15,5 @@ public class MediaDTO {
     private List<String> writers;
     private List<String> stars;
     private String description;
+    private String imgUrl;
 }
