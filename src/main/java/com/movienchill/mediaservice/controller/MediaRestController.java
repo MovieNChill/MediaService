@@ -60,7 +60,7 @@ public class MediaRestController {
         }
     }
 
-    @GetMapping
+    @GetMapping("helloWorld")
     public String HelloWorld() {
         return "Hello World";
     }
