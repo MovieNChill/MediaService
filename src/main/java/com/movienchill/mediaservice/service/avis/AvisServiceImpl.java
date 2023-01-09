@@ -23,8 +23,8 @@ public class AvisServiceImpl implements AvisService, IGenericService<Avis, AvisD
     }
 
     @Override
-    public AvisDTO save(Avis entity) {
-        return null;
+    public void save(Avis entity) {
+
     }
 
     @Override

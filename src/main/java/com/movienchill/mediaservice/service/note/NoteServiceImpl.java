@@ -23,8 +23,7 @@ public class NoteServiceImpl implements NoteService, IGenericService<Note, NoteD
     }
 
     @Override
-    public NoteDTO save(Note entity) {
-        return null;
+    public void save(Note entity) {
     }
 
     @Override

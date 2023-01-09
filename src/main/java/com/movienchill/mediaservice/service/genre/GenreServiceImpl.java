@@ -22,8 +22,8 @@ public class GenreServiceImpl implements GenreService, IGenericService<Genre, Ge
     }
 
     @Override
-    public GenreDTO save(Genre entity) {
-        return null;
+    public void save(Genre entity) {
+
     }
 
     @Override
