@@ -7,6 +7,7 @@ import com.movienchill.mediaservice.domain.specification.builder.SpecificationBu
 import com.movienchill.mediaservice.service.media.MediaService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,17 +34,24 @@ public class MediaRestController {
 
     /**
      * Endpoint to get list of medias with filter in parameter if present
+     * <p>
      * The parameter will be analysed with Regex to extract filters
      * The form need to be : "key:value,".
      * - "key" : The key in DB to filter
      * - ":" or "<" or ">" or "%" : For respectively "Equal", "Inferior", "Superior", "Like"
      * - "value" : The value wanted
+     * <p>
      *
      * @param search A string with the multiple filter. Need to be under the form "key:value".
+     * @param page   The current number of the page
+     * @param size   The number of element in the page
      * @return a list of media
      */
     @GetMapping
-    public ResponseEntity<List<MediaDTO>> getMediaWithFilter(@RequestParam(value = "search", required = false) String search) {
+    public ResponseEntity<List<MediaDTO>> getMediaWithFilter(
+            @RequestParam(value = "page") Integer page,
+            @RequestParam(value = "size") Integer size,
+            @RequestParam(value = "search", required = false) String search) {
         SpecificationBuilder<Media> builder = new SpecificationBuilder<Media>();
 
         // Search of filters
@@ -55,7 +63,7 @@ public class MediaRestController {
         Specification<Media> spec = builder.build();
 
         // Get medias
-        List<MediaDTO> listMedia = mediaService.findAllWithFilter(spec);
+        List<MediaDTO> listMedia = mediaService.findAllWithFilter(spec, PageRequest.of(page, size));
 
         if (listMedia != null) {
             return new ResponseEntity<>(listMedia, HttpStatus.OK);
@@ -87,8 +95,8 @@ public class MediaRestController {
      * @return the mediaDTO
      */
     @GetMapping("/{id}")
-    public ResponseEntity<MediaDTO> getMediaById(@PathVariable Long id) {
-        MediaDTO mediaDTO = mediaService.findById(id);
+    public ResponseEntity<MediaDTO> getMediaById(@PathVariable String id) {
+        MediaDTO mediaDTO = mediaService.findById(Long.parseLong(id));
         if (mediaDTO != null) {
             return new ResponseEntity<>(mediaDTO, HttpStatus.OK);
         } else {
