@@ -12,12 +12,13 @@ import java.util.List;
 public class Media {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false)
     private Long id;
 
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
     private String type;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "genre")
@@ -27,7 +28,7 @@ public class Media {
     @Column(name = "release_date")
     private Date releaseDate;
 
-    @Column(name = "director")
+    @Column(name = "director", nullable = false)
     private String director;
 
     @Column(name = "writers")

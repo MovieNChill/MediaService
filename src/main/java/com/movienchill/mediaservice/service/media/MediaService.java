@@ -9,5 +9,5 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.List;
 
 public interface MediaService extends IGenericService<Media, MediaDTO> {
-    public List<MediaDTO> findAllWithFilter(Specification<Media> spec, Pageable pageable);
+    public List<MediaDTO> findAllWithFilter(Specification<String> spec, Pageable pageable);
 }

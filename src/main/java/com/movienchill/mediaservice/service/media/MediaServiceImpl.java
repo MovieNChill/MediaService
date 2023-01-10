@@ -6,7 +6,6 @@ import com.movienchill.mediaservice.domain.repository.MediaDAO;
 import com.movienchill.mediaservice.utils.Mapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -25,12 +24,11 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public List<MediaDTO> findAllWithFilter(Specification<Media> spec, Pageable pageable) {
-        Page<Media> listMedia = null;
+    public List<MediaDTO> findAllWithFilter(Specification<String> spec, Pageable pageable) {
         try {
-            listMedia = mediaDAO.findAll(spec, pageable);
+            List<Media> listMedia = mediaDAO.findAll(spec, pageable).getContent();
 
-            if(listMedia != null) {
+            if (listMedia != null) {
                 return Mapper.mapList(listMedia.stream().toList(), MediaDTO.class);
             }
         } catch (Exception e) {

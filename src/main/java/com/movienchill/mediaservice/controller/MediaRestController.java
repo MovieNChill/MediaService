@@ -2,7 +2,6 @@ package com.movienchill.mediaservice.controller;
 
 import com.movienchill.mediaservice.constants.Router;
 import com.movienchill.mediaservice.domain.dto.MediaDTO;
-import com.movienchill.mediaservice.domain.model.Media;
 import com.movienchill.mediaservice.domain.specification.builder.SpecificationBuilder;
 import com.movienchill.mediaservice.service.media.MediaService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,15 +14,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Slf4j
 @CrossOrigin
 @RestController
 @RequestMapping(Router.BASE_MEDIA)
 public class MediaRestController {
-    private final String PATTERN_SEARCH_REGEX = "(\\w+?)(:|<|>|%)(\\w+?),";
 
     private final MediaService mediaService;
 
@@ -38,7 +34,7 @@ public class MediaRestController {
      * The parameter will be analysed with Regex to extract filters
      * The form need to be : "key:value,".
      * - "key" : The key in DB to filter
-     * - ":" or "<" or ">" or "%" : For respectively "Equal", "Inferior", "Superior", "Like"
+     * - ":" or "<" or ">" : For respectively "Equal", "Inferior", "Superior"
      * - "value" : The value wanted
      * <p>
      *
@@ -52,15 +48,10 @@ public class MediaRestController {
             @RequestParam(value = "page") Integer page,
             @RequestParam(value = "size") Integer size,
             @RequestParam(value = "search", required = false) String search) {
-        SpecificationBuilder<Media> builder = new SpecificationBuilder<Media>();
 
-        // Search of filters
-        Pattern pattern = Pattern.compile(PATTERN_SEARCH_REGEX);
-        Matcher matcher = pattern.matcher(search + ",");
-        while (matcher.find()) {
-            builder.with(matcher.group(1), matcher.group(2), matcher.group(3));
-        }
-        Specification<Media> spec = builder.build();
+        // Filter analysis and Specification build
+        SpecificationBuilder specificationBuilder = new SpecificationBuilder();
+        Specification<String> spec = specificationBuilder.searchFilter(search);
 
         // Get medias
         List<MediaDTO> listMedia = mediaService.findAllWithFilter(spec, PageRequest.of(page, size));
@@ -89,7 +80,7 @@ public class MediaRestController {
     }
 
     /**
-     * Endpoint to get a media with his id
+     * Endpoint to get a media with his id in parameter
      *
      * @param id The id of the media
      * @return the mediaDTO
@@ -104,6 +95,10 @@ public class MediaRestController {
         }
     }
 
+    /**
+     * ONLY TO TEST
+     * // TODO DELETE
+     */
     @GetMapping("helloWorld")
     public String HelloWorld() {
         return "Hello World";

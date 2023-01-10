@@ -7,7 +7,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
-public class SpecificationSearch<T> implements Specification<T> {
+public class SpecificationSearch implements Specification<String> {
     private SearchCriteria criteria;
 
     public SpecificationSearch(SearchCriteria criteria) {
@@ -15,14 +15,14 @@ public class SpecificationSearch<T> implements Specification<T> {
     }
 
     @Override
-    public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+    public Predicate toPredicate(Root<String> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
         // Operator sup
         if (criteria.getOperation().equalsIgnoreCase(">")) {
-            return builder.greaterThanOrEqualTo(root.<String>get(criteria.getKey()), criteria.getValue().toString());
+            return builder.greaterThanOrEqualTo(root.<String>get(criteria.getKey()), criteria.getValue().toString().toUpperCase());
         } else if (criteria.getOperation().equalsIgnoreCase("<")) {
             // Operation decrease
-            return builder.lessThanOrEqualTo(root.<String>get(criteria.getKey()), criteria.getValue().toString());
+            return builder.lessThanOrEqualTo(root.<String>get(criteria.getKey()), criteria.getValue().toString().toUpperCase());
         } else if (criteria.getOperation().equalsIgnoreCase(":")) {
             if (root.get(criteria.getKey()).getJavaType() == String.class) {
                 // Operator like
