@@ -21,7 +21,8 @@ public class Media {
     private String name;
 
     @Column(name = "genre")
-    private String genre;
+    @ElementCollection
+    private List<String> genre;
 
     @Column(name = "release_date")
     private Date releaseDate;
