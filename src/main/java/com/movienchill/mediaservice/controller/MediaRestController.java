@@ -6,11 +6,13 @@ import com.movienchill.mediaservice.domain.model.Media;
 import com.movienchill.mediaservice.domain.specification.builder.SpecificationBuilder;
 import com.movienchill.mediaservice.service.media.MediaService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -62,6 +64,22 @@ public class MediaRestController {
             return new ResponseEntity<>(listMedia, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Endpoint to create a media
+     * @param mediaDTO The MediaDTO
+     * @return A response entity True if success else False
+     */
+    @PostMapping
+    @ApiOperation(value = "", nickname = "createMedia")
+    public ResponseEntity<Boolean> createMedia(@RequestBody @Validated MediaDTO mediaDTO) {
+        boolean result = mediaService.create(mediaDTO);
+        if (result) {
+            return new ResponseEntity<>(Boolean.TRUE, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(Boolean.FALSE, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
