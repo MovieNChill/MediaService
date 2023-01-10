@@ -23,6 +23,11 @@ public class NoteServiceImpl implements NoteService, IGenericService<Note, NoteD
     }
 
     @Override
+    public boolean create(NoteDTO entityDto) {
+        return false;
+    }
+
+    @Override
     public void save(Note entity) {
     }
 

@@ -23,6 +23,11 @@ public class PlatformServiceImpl implements PlatformService, IGenericService<Pla
     }
 
     @Override
+    public boolean create(PlatformDTO entityDto) {
+        return false;
+    }
+
+    @Override
     public void save(Platform entity) {
 
     }

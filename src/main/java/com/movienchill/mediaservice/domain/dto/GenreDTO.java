@@ -1,6 +1,5 @@
 package com.movienchill.mediaservice.domain.dto;
 
-import com.movienchill.mediaservice.domain.model.Media;
 import lombok.Data;
 
 @Data

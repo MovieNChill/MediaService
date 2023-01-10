@@ -1,14 +1,13 @@
 package com.movienchill.mediaservice.service.media;
 
-import com.movienchill.mediaservice.domain.dto.FilterDTO;
 import com.movienchill.mediaservice.domain.dto.MediaDTO;
 import com.movienchill.mediaservice.domain.model.Media;
 import com.movienchill.mediaservice.domain.repository.MediaDAO;
 import com.movienchill.mediaservice.utils.Mapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,28 +24,16 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public List<MediaDTO> findAllWithFilter(FilterDTO filter) {
-        Page<Media> listMedia = null;
+    public List<MediaDTO> findAllWithFilter(Specification<Media> spec) {
+        List<Media> listMedia = null;
+        try {
+            listMedia = mediaDAO.findAll(spec);
 
-        // Analyse des filtres
-        if (filter.getNumberPage() != null
-                && filter.getNumberElement() != null
-                && filter.getSort() != null) {
-
-            // Recuperation des medias
-            try {
-                listMedia = mediaDAO.findAll(PageRequest.of(filter.getNumberPage(), filter.getNumberElement()));
-            } catch (Exception e) {
-                log.error("An error occured while retrieving medias : {}", e.getMessage());
+            if(listMedia != null) {
+                return Mapper.mapList(listMedia, MediaDTO.class);
             }
-
-            if (listMedia != null && listMedia.getSize() > 0) {
-                // Mapping DTO
-                return Mapper.mapList(listMedia.stream().toList(), MediaDTO.class);
-            }
-        } else {
-            log.error("An error occurred during the analysis of filter");
-            return null;
+        } catch (Exception e) {
+            log.error("An error occured while retrieving medias : {}", e.getMessage());
         }
 
         return null;
@@ -65,6 +52,23 @@ public class MediaServiceImpl implements MediaService {
         }
 
         return null;
+    }
+
+    @Override
+    public boolean create(MediaDTO entityDto) {
+        try {
+            // Mapping DTO to entity
+            Media media = Mapper.map(entityDto, Media.class);
+
+            // Saving
+            save(media);
+
+            return true;
+        } catch (Exception e) {
+            log.error("An error occured while creating the media : {}", e.getMessage());
+        }
+
+        return false;
     }
 
     @Override

@@ -20,9 +20,6 @@ public class GenreServiceImpl implements GenreService, IGenericService<Genre, Ge
     @Autowired
     private GenreDAO genreDAO;
 
-    @Autowired
-    private MediaService mediaService;
-
     @Override
     public List<GenreDTO> findAll() {
         return null;
@@ -65,6 +62,11 @@ public class GenreServiceImpl implements GenreService, IGenericService<Genre, Ge
         }
 
         return null;
+    }
+
+    @Override
+    public boolean create(GenreDTO entityDto) {
+        return false;
     }
 
     @Override

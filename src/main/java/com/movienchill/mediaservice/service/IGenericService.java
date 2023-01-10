@@ -27,6 +27,13 @@ public interface IGenericService<T, D> {
     D findById(Long id);
 
     /**
+     * Method to create an entity from DTO
+     * @param entityDto The DTO of the entity
+     * @return true if success else false
+     */
+    boolean create(D entityDto);
+
+    /**
      * Method for saving an entity in database
      *
      * @param entity the entity

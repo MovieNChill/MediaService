@@ -23,6 +23,11 @@ public class AvisServiceImpl implements AvisService, IGenericService<Avis, AvisD
     }
 
     @Override
+    public boolean create(AvisDTO entityDto) {
+        return false;
+    }
+
+    @Override
     public void save(Avis entity) {
 
     }
