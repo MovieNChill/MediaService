@@ -7,22 +7,27 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpecificationBuilder {
+public class SpecificationBuilder<T> {
     private final List<SearchCriteria> params;
 
     public SpecificationBuilder() {
         params = new ArrayList<>();
     }
 
-    public final SpecificationBuilder with(String key, String operation, Object value) {
-        return with(key, operation, value);
+    public final SpecificationBuilder<T> with(String key, String operation, Object value) {
+        return with(false, key, operation, value);
     }
 
-    public Specification build() {
+    public final SpecificationBuilder<T> with(final boolean orPredicate, final String key, final String operation, final Object value) {
+        params.add(new SearchCriteria(key, operation, value, orPredicate));
+        return this;
+    }
+
+    public Specification<T> build() {
         if (params.size() == 0)
             return null;
 
-        Specification result = new SpecificationSearch(params.get(0));
+        Specification<T> result = new SpecificationSearch(params.get(0));
 
         for (int i = 1; i < params.size(); i++) {
             result = params.get(i).isOrPredicate()

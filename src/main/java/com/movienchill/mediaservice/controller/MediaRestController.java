@@ -5,8 +5,6 @@ import com.movienchill.mediaservice.domain.dto.MediaDTO;
 import com.movienchill.mediaservice.domain.model.Media;
 import com.movienchill.mediaservice.domain.specification.builder.SpecificationBuilder;
 import com.movienchill.mediaservice.service.media.MediaService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.models.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -24,7 +22,7 @@ import java.util.regex.Pattern;
 @RestController
 @RequestMapping(Router.BASE_MEDIA)
 public class MediaRestController {
-    private final String PATTERN_SEARCH_REGEX = "(\\w+?)(:|<|>)(\\w+?),";
+    private final String PATTERN_SEARCH_REGEX = "(\\w+?)(:|<|>|%)(\\w+?),";
 
     private final MediaService mediaService;
 
@@ -34,20 +32,19 @@ public class MediaRestController {
     }
 
     /**
-     * Endpoint to get list of medias with filter in parameter
-     * The parameter will be analysed with Regex to extract differents filter
+     * Endpoint to get list of medias with filter in parameter if present
+     * The parameter will be analysed with Regex to extract filters
      * The form need to be : "key:value,".
      * - "key" : The key in DB to filter
      * - ":" or "<" or ">" or "%" : For respectively "Equal", "Inferior", "Superior", "Like"
      * - "value" : The value wanted
      *
-     * @param search A string with the multiple filter. Need to be under the form "key:value"
+     * @param search A string with the multiple filter. Need to be under the form "key:value".
      * @return a list of media
      */
     @GetMapping
-    @ApiOperation(value = "", nickname = "getMediaWithFilter")
-    public ResponseEntity<List<MediaDTO>> getMediaWithFilter(@RequestParam(value = "search") String search) {
-        SpecificationBuilder builder = new SpecificationBuilder();
+    public ResponseEntity<List<MediaDTO>> getMediaWithFilter(@RequestParam(value = "search", required = false) String search) {
+        SpecificationBuilder<Media> builder = new SpecificationBuilder<Media>();
 
         // Search of filters
         Pattern pattern = Pattern.compile(PATTERN_SEARCH_REGEX);
@@ -69,11 +66,11 @@ public class MediaRestController {
 
     /**
      * Endpoint to create a media
+     *
      * @param mediaDTO The MediaDTO
      * @return A response entity True if success else False
      */
     @PostMapping
-    @ApiOperation(value = "", nickname = "createMedia")
     public ResponseEntity<Boolean> createMedia(@RequestBody @Validated MediaDTO mediaDTO) {
         boolean result = mediaService.create(mediaDTO);
         if (result) {
@@ -90,7 +87,6 @@ public class MediaRestController {
      * @return the mediaDTO
      */
     @GetMapping("/{id}")
-    @ApiOperation(value = "", nickname = "getMediaById")
     public ResponseEntity<MediaDTO> getMediaById(@PathVariable Long id) {
         MediaDTO mediaDTO = mediaService.findById(id);
         if (mediaDTO != null) {
