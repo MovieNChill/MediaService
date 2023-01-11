@@ -80,7 +80,7 @@ public class MediaServiceTest {
         // GIVEN
         Media media = new Media();
         media.setDescription("description");
-        media.setGenre("genre");
+        //media.setGenre("genre");
         when(mediaDAO.findById(1L)).thenReturn(Optional.of(media));
         // WHEN
         MediaDTO mediaId1 = mediaService.findById(1L);
