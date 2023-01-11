@@ -26,7 +26,7 @@ public class MediaServiceImpl implements MediaService {
     @Override
     public List<MediaDTO> findAllWithFilter(Specification<String> spec, Pageable pageable) {
         try {
-            List<Media> listMedia = mediaDAO.findAll(spec, pageable).getContent();
+            List<Media> listMedia = mediaDAO.findAll(spec, pageable);
 
             if (listMedia != null) {
                 return Mapper.mapList(listMedia.stream().toList(), MediaDTO.class);
