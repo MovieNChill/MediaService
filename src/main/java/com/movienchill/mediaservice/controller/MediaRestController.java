@@ -20,6 +20,8 @@ import java.util.List;
 @RestController
 @RequestMapping(Router.BASE_MEDIA)
 public class MediaRestController {
+    private final Integer DEFAULT_PAGE_VALUE = 0;
+    private final Integer DEFAULT_SIZE_VALUE = 15;
 
     private final MediaService mediaService;
 
@@ -45,13 +47,21 @@ public class MediaRestController {
      */
     @GetMapping
     public ResponseEntity<List<MediaDTO>> getMediaWithFilter(
-            @RequestParam(value = "page") Integer page,
-            @RequestParam(value = "size") Integer size,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size,
             @RequestParam(value = "search", required = false) String search) {
 
         // Filter analysis and Specification build
         SpecificationBuilder specificationBuilder = new SpecificationBuilder();
         Specification<String> spec = specificationBuilder.searchFilter(search);
+
+        // Add default pageable if parameters "page" and "size" not presents
+        if(page == null) {
+            page = DEFAULT_PAGE_VALUE;
+        }
+        if(size == null) {
+            size = DEFAULT_SIZE_VALUE;
+        }
 
         // Get medias
         List<MediaDTO> listMedia = mediaService.findAllWithFilter(spec, PageRequest.of(page, size));
