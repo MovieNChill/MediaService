@@ -17,4 +17,20 @@ public class MediaDTO {
     private List<String> stars;
     private String description;
     private String imgUrl;
+
+    public MediaDTO() {
+
+    }
+    public MediaDTO(Long id, String type, String name, List<String> genre, Date releaseDate, String director, List<String> writers, List<String> stars, String description, String imgUrl) {
+        this.id = id;
+        this.type = type;
+        this.name = name;
+        this.genre = genre;
+        this.releaseDate = releaseDate;
+        this.director = director;
+        this.writers = writers;
+        this.stars = stars;
+        this.description = description;
+        this.imgUrl = imgUrl;
+    }
 }

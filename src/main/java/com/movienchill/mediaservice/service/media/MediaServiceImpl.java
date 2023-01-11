@@ -40,6 +40,11 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public MediaDTO findById(Long id) {
+        /*
+        return mediaDAO.findById(id)
+                .map(media -> Mapper.map(media, MediaDTO.class))
+                .orElseThrow(() -> new RuntimeException("AUcun medi trouvé pour l'identifiant " + id))
+         */
         try {
             if (mediaDAO.findById(id).isPresent()) {
                 return Mapper.map(mediaDAO.findById(id).get(), MediaDTO.class);
