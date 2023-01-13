@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping(Router.BASE_MEDIA)
 public class MediaRestController {
     private final Integer DEFAULT_PAGE_VALUE = 0;
-    private final Integer DEFAULT_SIZE_VALUE = 15;
+    private final Integer DEFAULT_SIZE_VALUE = 4;
 
     private final MediaService mediaService;
 
