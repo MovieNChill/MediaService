@@ -4,6 +4,9 @@ env:
   ASC_PACKAGE_PATH: ${{ github.workspace }}
   JAVA_VERSION: 17
   AZURE_SUBSCRIPTION: 0917b8b7-c85b-4a76-9d2d-aed90d7d3b99
+  SERVICE_NAME: api-movienchill
+  APP_NAME: medias
+  ENV_DEV: false
 
 jobs:
   deploy_to_production:
@@ -31,7 +34,7 @@ jobs:
         with:
           azure-subscription: ${{ env.AZURE_SUBSCRIPTION }}
           action: Deploy
-          service-name: api-movienchill
-          app-name: mediaservice
-          use-staging-deployment: false
+          service-name: ${{ env.SERVICE_NAME }}
+          app-name: ${{ env.APP_NAME }}
+          use-staging-deployment: ${{ env.ENV_DEV }}
           package: ${{ env.ASC_PACKAGE_PATH }}/**/*.jar
