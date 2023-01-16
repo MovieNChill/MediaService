@@ -33,7 +33,7 @@ public class PlatformServiceImpl implements PlatformService, IGenericService<Pla
     }
 
     @Override
-    public void delete(Platform entity) {
+    public void delete(Long id) {
 
     }
 }

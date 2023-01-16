@@ -33,7 +33,7 @@ public class AvisServiceImpl implements AvisService, IGenericService<Avis, AvisD
     }
 
     @Override
-    public void delete(Avis entity) {
+    public void delete(Long id) {
 
     }
 }

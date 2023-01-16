@@ -114,6 +114,12 @@ public class MediaRestController {
      * ONLY TO TEST
      * // TODO DELETE
      */
+    @DeleteMapping("/{id}")
+    public Boolean deleteMediaById(@PathVariable String id) {
+        mediaService.delete(Long.parseLong(id));
+        return true;
+    }
+
     @GetMapping("helloWorld")
     public String HelloWorld() {
         return "Hello World";

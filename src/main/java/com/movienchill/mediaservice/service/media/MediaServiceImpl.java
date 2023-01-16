@@ -79,9 +79,9 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public void delete(Media entity) {
+    public void delete(Long id) {
         try {
-            mediaDAO.delete(entity);
+            mediaDAO.delete(mediaDAO.findById(id).get());
         } catch (Exception e) {
             log.error("Error while deleting the entity : {}", e.getMessage());
         }

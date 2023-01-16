@@ -32,7 +32,7 @@ public class NoteServiceImpl implements NoteService, IGenericService<Note, NoteD
     }
 
     @Override
-    public void delete(Note entity) {
+    public void delete(Long id) {
 
     }
 }

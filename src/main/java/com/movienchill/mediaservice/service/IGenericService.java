@@ -28,6 +28,7 @@ public interface IGenericService<T, D> {
 
     /**
      * Method to create an entity from DTO
+     * 
      * @param entityDto The DTO of the entity
      * @return true if success else false
      */
@@ -45,5 +46,5 @@ public interface IGenericService<T, D> {
      *
      * @param entity the entity
      */
-    void delete(T entity);
+    void delete(Long id);
 }
