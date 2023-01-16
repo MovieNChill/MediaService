@@ -39,9 +39,9 @@ public class Media {
     @ElementCollection
     private List<String> stars;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 2048)
     private String description;
 
-    @Column(name = "imgUrl")
+    @Column(name = "imgUrl", length = 2048)
     private String imgUrl;
 }

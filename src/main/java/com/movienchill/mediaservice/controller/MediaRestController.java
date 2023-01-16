@@ -40,9 +40,10 @@ public class MediaRestController {
      * - "value" : The value wanted
      * <p>
      *
-     * @param search A string with the multiple filter. Need to be under the form "key:value".
+     * @param search A string with the multiple filter. Need to be under the form
+     *               "key:value".
      * @param page   The current number of the page
-     * @param size   The number of element in the page
+     * @param ize    The number of element in the page
      * @return a list of media
      */
     @GetMapping
@@ -56,10 +57,10 @@ public class MediaRestController {
         Specification<String> spec = specificationBuilder.searchFilter(search);
 
         // Add default pageable if parameters "page" and "size" not presents
-        if(page == null) {
+        if (page == null) {
             page = DEFAULT_PAGE_VALUE;
         }
-        if(size == null) {
+        if (size == null) {
             size = DEFAULT_SIZE_VALUE;
         }
 
@@ -82,9 +83,13 @@ public class MediaRestController {
     @PostMapping
     public ResponseEntity<Boolean> createMedia(@RequestBody @Validated MediaDTO mediaDTO) {
         boolean result = mediaService.create(mediaDTO);
-        if (result) {
-            return new ResponseEntity<>(Boolean.TRUE, HttpStatus.OK);
-        } else {
+        try {
+            if (result) {
+                return new ResponseEntity<>(Boolean.TRUE, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(Boolean.FALSE, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
             return new ResponseEntity<>(Boolean.FALSE, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -41,9 +41,10 @@ public class MediaServiceImpl implements MediaService {
     @Override
     public MediaDTO findById(Long id) {
         /*
-        return mediaDAO.findById(id)
-                .map(media -> Mapper.map(media, MediaDTO.class))
-                .orElseThrow(() -> new RuntimeException("AUcun medi trouvé pour l'identifiant " + id))
+         * return mediaDAO.findById(id)
+         * .map(media -> Mapper.map(media, MediaDTO.class))
+         * .orElseThrow(() -> new
+         * RuntimeException("AUcun medi trouvé pour l'identifiant " + id))
          */
         try {
             if (mediaDAO.findById(id).isPresent()) {
@@ -60,19 +61,11 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public boolean create(MediaDTO entityDto) {
-        try {
-            // Mapping DTO to entity
-            Media media = Mapper.map(entityDto, Media.class);
-
-            // Saving
-            save(media);
-
-            return true;
-        } catch (Exception e) {
-            log.error("An error occured while creating the media : {}", e.getMessage());
-        }
-
-        return false;
+        // Mapping DTO to entity
+        Media media = Mapper.map(entityDto, Media.class);
+        // Saving
+        this.save(media);
+        return true;
     }
 
     @Override
@@ -81,6 +74,7 @@ public class MediaServiceImpl implements MediaService {
             mediaDAO.save(entity);
         } catch (Exception e) {
             log.error("Error while saving the entity : {}", e.getMessage());
+            throw e;
         }
     }
 

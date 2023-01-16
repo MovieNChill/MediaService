@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -39,14 +39,11 @@ import java.util.*;
 @ExtendWith(SpringExtension.class)
 public class MediaServiceTest {
 
-
     @InjectMocks
     private MediaServiceImpl mediaService;
 
     @Mock
     private MediaDAO mediaDAO;
-
-
 
     /**
      * Test testGetMediasById(id)
@@ -76,11 +73,12 @@ public class MediaServiceTest {
             throw new RuntimeException(e);
         }
 
-        MediaDTO mediaTest = new MediaDTO(1L, "Movie", "Test - The Movie", null, date, "Charles B", writterList, starList, "C'est l'histoire d'un test pour MovieNChill", null);
+        MediaDTO mediaTest = new MediaDTO(1L, "Movie", "Test - The Movie", null, date, "Charles B", writterList,
+                starList, "C'est l'histoire d'un test pour MovieNChill", null);
         // GIVEN
         Media media = new Media();
         media.setDescription("description");
-        //media.setGenre("genre");
+        // media.setGenre("genre");
         when(mediaDAO.findById(1L)).thenReturn(Optional.of(media));
         // WHEN
         MediaDTO mediaId1 = mediaService.findById(1L);
