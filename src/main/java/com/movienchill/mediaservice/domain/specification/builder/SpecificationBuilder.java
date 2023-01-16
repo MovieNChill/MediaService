@@ -26,7 +26,8 @@ public class SpecificationBuilder {
     }
 
     public Specification<String> build() {
-        if (params.size() == 0) return null;
+        if (params.size() == 0)
+            return null;
 
         List<Specification> specifications = params.stream().map(SpecificationSearch::new).collect(Collectors.toList());
 
@@ -41,7 +42,7 @@ public class SpecificationBuilder {
     public Specification<String> searchFilter(String search) {
         try {
             // Search of filters
-            Pattern pattern = Pattern.compile(PATTERN_SEARCH_REGEX);
+            Pattern pattern = Pattern.compile(PATTERN_SEARCH_REGEX, Pattern.CASE_INSENSITIVE);
             Matcher matcher = pattern.matcher(search + ",");
             while (matcher.find()) {
                 // Case where values to search are Boolean
