@@ -2,8 +2,10 @@ package com.movienchill.mediaservice.controller;
 
 import com.movienchill.mediaservice.constants.Router;
 import com.movienchill.mediaservice.domain.dto.MediaDTO;
+import com.movienchill.mediaservice.domain.dto.PlatformDTO;
 import com.movienchill.mediaservice.domain.specification.builder.SpecificationBuilder;
 import com.movienchill.mediaservice.service.media.MediaService;
+import com.movienchill.mediaservice.service.platform.PlatformService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -25,9 +27,12 @@ public class MediaRestController {
 
     private final MediaService mediaService;
 
+    private final PlatformService platformService;
+
     @Autowired
-    public MediaRestController(MediaService mediaService) {
+    public MediaRestController(MediaService mediaService, PlatformService platformService) {
         this.mediaService = mediaService;
+        this.platformService = platformService;
     }
 
     /**
@@ -43,7 +48,7 @@ public class MediaRestController {
      * @param search A string with the multiple filter. Need to be under the form
      *               "key:value".
      * @param page   The current number of the page
-     * @param ize    The number of element in the page
+     * @paramize    The number of element in the page
      * @return a list of media
      */
     @GetMapping
@@ -108,6 +113,13 @@ public class MediaRestController {
         } else {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/{id}/platform")
+    public  ResponseEntity<List<PlatformDTO> >  getMediaPlatform(@PathVariable String id) {
+        MediaDTO mediaDTO = mediaService.findById(Long.parseLong(id));
+        List<PlatformDTO> listPlatform= platformService.getPlatformInfo(mediaDTO.getName());
+        return new ResponseEntity<>(listPlatform, HttpStatus.OK);
     }
 
     /**
