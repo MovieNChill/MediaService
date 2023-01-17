@@ -13,6 +13,7 @@ import com.movienchill.mediaservice.controller.MediaRestController;
 import com.movienchill.mediaservice.domain.dto.MediaDTO;
 import com.movienchill.mediaservice.domain.model.Media;
 import com.movienchill.mediaservice.domain.repository.MediaDAO;
+import com.movienchill.mediaservice.domain.specification.builder.SpecificationBuilder;
 import com.movienchill.mediaservice.service.IGenericService;
 import com.movienchill.mediaservice.service.media.MediaService;
 import com.movienchill.mediaservice.service.media.MediaServiceImpl;
@@ -25,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -86,5 +89,23 @@ public class MediaServiceTest {
         assertThat(media)
                 .usingRecursiveComparison()
                 .ignoringFields("genre").isEqualTo(mediaId1);
+    }
+
+
+    /**
+     * Test testFindAllWithFilter(Specification, PageRequest)
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testFindAllWithFilter() throws Exception {
+
+        // Filter analysis and Specification build
+        SpecificationBuilder specificationBuilder = new SpecificationBuilder();
+        Specification<String> spec = specificationBuilder.searchFilter("name: Test");
+
+        List<MediaDTO> mediasList = new ArrayList<>();
+        mediasList = mediaService.findAllWithFilter(spec, PageRequest.of(0, 15));
+        assertThat(mediasList).isEmpty();
     }
 }
