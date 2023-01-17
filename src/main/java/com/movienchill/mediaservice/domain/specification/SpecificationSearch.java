@@ -27,9 +27,21 @@ public class SpecificationSearch implements Specification<String> {
                 // Operator like
                 return builder.like(
                         builder.lower(
-                                builder.function("replace", String.class, root.get("name"), builder.literal("-"),
+                                builder.function("replace", String.class,
+                                        builder.function("replace", String.class,
+                                                builder.function("replace", String.class,
+                                                        root.get("name"),
+                                                        builder.literal(" "),
+                                                        builder.literal("")),
+                                                builder.literal("-"),
+                                                builder.literal("")),
+                                        builder.literal("-"),
                                         builder.literal(""))),
-                        "%" + criteria.getValue().toString().toLowerCase().replaceAll("-", "") + "%");
+                        "%" + criteria.getValue().toString().toLowerCase()
+                                .replace("-", "")
+                                .replace(" ", "")
+                                .replace("_", "")
+                                + "%");
             } else {
                 // Operator equal
                 return builder.equal(root.get(criteria.getKey()), criteria.getValue());
