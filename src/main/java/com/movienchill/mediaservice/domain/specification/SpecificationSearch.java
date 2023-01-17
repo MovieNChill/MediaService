@@ -16,17 +16,20 @@ public class SpecificationSearch implements Specification<String> {
 
     @Override
     public Predicate toPredicate(Root<String> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-
         // Operator sup
         if (criteria.getOperation().equalsIgnoreCase(">")) {
-            return builder.greaterThanOrEqualTo(root.<String>get(criteria.getKey()), criteria.getValue().toString().toUpperCase());
+            return builder.greaterThanOrEqualTo(root.<String>get(criteria.getKey()), criteria.getValue().toString());
         } else if (criteria.getOperation().equalsIgnoreCase("<")) {
             // Operation decrease
-            return builder.lessThanOrEqualTo(root.<String>get(criteria.getKey()), criteria.getValue().toString().toUpperCase());
+            return builder.lessThanOrEqualTo(root.<String>get(criteria.getKey()), criteria.getValue().toString());
         } else if (criteria.getOperation().equalsIgnoreCase(":")) {
             if (root.get(criteria.getKey()).getJavaType() == String.class) {
                 // Operator like
-                return builder.like(root.<String>get(criteria.getKey()), "%" + criteria.getValue() + "%");
+                return builder.like(
+                        builder.lower(
+                                builder.function("replace", String.class, root.get("name"), builder.literal("-"),
+                                        builder.literal(""))),
+                        "%" + criteria.getValue().toString().toLowerCase().replaceAll("-", "") + "%");
             } else {
                 // Operator equal
                 return builder.equal(root.get(criteria.getKey()), criteria.getValue());
