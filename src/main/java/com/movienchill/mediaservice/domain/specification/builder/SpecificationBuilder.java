@@ -1,10 +1,12 @@
 package com.movienchill.mediaservice.domain.specification.builder;
 
+import com.movienchill.mediaservice.domain.model.Media;
 import com.movienchill.mediaservice.domain.specification.SpecificationSearch;
 import com.movienchill.mediaservice.domain.specification.search.SearchCriteria;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -14,7 +16,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SpecificationBuilder {
     private final List<SearchCriteria> params;
-    private final String PATTERN_SEARCH_REGEX = "(\\w+?)(:|<|>)(([0-9]+(?:[.][0-9]+))|[a-zA-Z0-9_ àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ¨*()Ã©-]+?|\\w+?-\\w+?-\\w+?)\\,";
+    private final String PATTERN_SEARCH_REGEX = "(\\w+?)(:|<|>)(\\w+?),";
 
     public SpecificationBuilder() {
         params = new ArrayList<>();
@@ -33,7 +35,10 @@ public class SpecificationBuilder {
 
         Specification result = specifications.get(0);
         for (int i = 0; i < params.size(); i++) {
-            result = Specification.where(result).and(specifications.get(i));
+            if (params.get(i).getOperation().equals("+"))
+                result = Specification.where(result).or(specifications.get(i));
+            else
+                result = Specification.where(result).and(specifications.get(i));
         }
 
         return result;
@@ -55,10 +60,16 @@ public class SpecificationBuilder {
                     with(matcher.group(1), matcher.group(2), matcher.group(3));
                 }
             }
+            if (!matcher.find(0)) {
+                for (Field filed : Media.class.getDeclaredFields()) {
+                    if (filed.getType() == String.class)
+                        with(filed.getName(), "+", search);
+                }
+            }
         } catch (Exception e) {
             log.error("An error occured while analysing the filter : {}", e.getMessage());
         }
-
         return build();
+
     }
 }

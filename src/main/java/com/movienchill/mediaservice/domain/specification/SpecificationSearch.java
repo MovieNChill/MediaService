@@ -22,7 +22,7 @@ public class SpecificationSearch implements Specification<String> {
         } else if (criteria.getOperation().equalsIgnoreCase("<")) {
             // Operation decrease
             return builder.lessThanOrEqualTo(root.<String>get(criteria.getKey()), criteria.getValue().toString());
-        } else if (criteria.getOperation().equalsIgnoreCase(":")) {
+        } else if (criteria.getOperation().equalsIgnoreCase(":") || criteria.getOperation().equalsIgnoreCase("+")) {
             if (root.get(criteria.getKey()).getJavaType() == String.class) {
                 // Operator like
                 return builder.like(
@@ -30,7 +30,7 @@ public class SpecificationSearch implements Specification<String> {
                                 builder.function("replace", String.class,
                                         builder.function("replace", String.class,
                                                 builder.function("replace", String.class,
-                                                        root.get("name"),
+                                                        root.get(criteria.getKey()),
                                                         builder.literal(" "),
                                                         builder.literal("")),
                                                 builder.literal("-"),
