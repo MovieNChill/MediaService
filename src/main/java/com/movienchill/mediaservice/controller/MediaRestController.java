@@ -3,6 +3,7 @@ package com.movienchill.mediaservice.controller;
 import com.movienchill.mediaservice.constants.Router;
 import com.movienchill.mediaservice.domain.dto.MediaDTO;
 import com.movienchill.mediaservice.domain.dto.PlatformDTO;
+import com.movienchill.mediaservice.domain.model.Genre;
 import com.movienchill.mediaservice.domain.specification.builder.SpecificationBuilder;
 import com.movienchill.mediaservice.service.media.MediaService;
 import com.movienchill.mediaservice.service.platform.PlatformService;
@@ -16,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @CrossOrigin
@@ -48,9 +50,21 @@ public class MediaRestController {
      * @param search A string with the multiple filter. Need to be under the form
      *               "key:value".
      * @param page   The current number of the page
-     * @paramize    The number of element in the page
+     * @paramize The number of element in the page
      * @return a list of media
      */
+
+    @GetMapping("/genres")
+    public ResponseEntity<List<String>> getGenres() {
+        List<String> genres = mediaService.getGenres().stream().map(Genre::getName).collect(Collectors.toList());
+
+        if (genres != null) {
+            return new ResponseEntity<>(genres, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping
     public ResponseEntity<List<MediaDTO>> getMediaWithFilter(
             @RequestParam(value = "page", required = false) Integer page,
@@ -59,7 +73,10 @@ public class MediaRestController {
 
         // Filter analysis and Specification build
         SpecificationBuilder specificationBuilder = new SpecificationBuilder();
-        Specification<String> spec = specificationBuilder.searchFilter(search);
+        Specification<String> spec = null;
+        if (search != null) {
+            spec = specificationBuilder.searchFilter(search);
+        }
 
         // Add default pageable if parameters "page" and "size" not presents
         if (page == null) {
@@ -100,6 +117,31 @@ public class MediaRestController {
     }
 
     /**
+     * Endpoint to create medias
+     *
+     * @param mediaDTO The MediaDTO
+     * @return A response entity True if success else False
+     */
+    @PostMapping("/list")
+    public ResponseEntity<Boolean> createMedias(@RequestBody @Validated List<MediaDTO> mediaDTO) {
+        Boolean result = true;
+        try {
+            for (MediaDTO media : mediaDTO) {
+                if (!mediaService.create(media)) {
+                    result = false;
+                }
+            }
+            if (result) {
+                return new ResponseEntity<>(Boolean.TRUE, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(Boolean.FALSE, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(Boolean.FALSE, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
      * Endpoint to get a media with his id in parameter
      *
      * @param id The id of the media
@@ -116,9 +158,9 @@ public class MediaRestController {
     }
 
     @GetMapping("/{id}/platform")
-    public  ResponseEntity<List<PlatformDTO> >  getMediaPlatform(@PathVariable String id) {
+    public ResponseEntity<List<PlatformDTO>> getMediaPlatform(@PathVariable String id) {
         MediaDTO mediaDTO = mediaService.findById(Long.parseLong(id));
-        List<PlatformDTO> listPlatform= platformService.getPlatformInfo(mediaDTO.getName());
+        List<PlatformDTO> listPlatform = platformService.getPlatformInfo(mediaDTO.getName());
         return new ResponseEntity<>(listPlatform, HttpStatus.OK);
     }
 

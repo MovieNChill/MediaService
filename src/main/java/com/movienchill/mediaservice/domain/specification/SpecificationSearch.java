@@ -1,13 +1,23 @@
 package com.movienchill.mediaservice.domain.specification;
 
+import com.movienchill.mediaservice.domain.model.Genre;
 import com.movienchill.mediaservice.domain.specification.search.SearchCriteria;
 
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
+import java.lang.annotation.Annotation;
+import java.util.List;
+
+import org.hibernate.validator.internal.util.privilegedactions.GetDeclaredField;
 import org.springframework.data.jpa.domain.Specification;
 
 public class SpecificationSearch implements Specification<String> {
@@ -27,22 +37,21 @@ public class SpecificationSearch implements Specification<String> {
             return builder.lessThanOrEqualTo(root.<String>get(criteria.getKey()), criteria.getValue().toString());
             // Operator like
         } else if (criteria.getOperation().equalsIgnoreCase(":")) {
-            // try {
             if (criteria.getKey() == "*") {
                 SearchCriteria nameSearchCriteria = new SearchCriteria("name", ":", criteria.getValue());
                 SearchCriteria directorSearchCriteria = new SearchCriteria("director", ":", criteria.getValue());
                 SearchCriteria descriptionSearchCriteria = new SearchCriteria("description", ":", criteria.getValue());
 
-                Predicate namePredicate = format(root, nameSearchCriteria, builder);
-                Predicate directorPredicate = format(root, directorSearchCriteria, builder);
-                Predicate descriptionPredicate = format(root, descriptionSearchCriteria, builder);
+                Predicate namePredicate = format(nameSearchCriteria, root, query, builder, null);
+                Predicate directorPredicate = format(directorSearchCriteria, root, query, builder, null);
+                Predicate descriptionPredicate = format(descriptionSearchCriteria, root, query, builder, null);
 
                 query.where(builder.or(namePredicate, directorPredicate, descriptionPredicate));
 
                 Order[] orderList = {
-                        builder.desc(format(root, nameSearchCriteria, builder)),
-                        builder.desc(format(root, directorSearchCriteria, builder)),
-                        builder.desc(format(root, descriptionSearchCriteria, builder)),
+                        builder.desc(format(nameSearchCriteria, root, query, builder, null)),
+                        builder.desc(format(directorSearchCriteria, root, query, builder, null)),
+                        builder.desc(format(descriptionSearchCriteria, root, query, builder, null)),
                 };
 
                 query.orderBy(orderList);
@@ -50,8 +59,11 @@ public class SpecificationSearch implements Specification<String> {
                 return query.getRestriction();
             }
             if (root.get(criteria.getKey()).getJavaType() == String.class) {
-                return format(root, this.criteria, builder);
+                return format(this.criteria, root, query, builder, null);
             } else {
+                if (root.get(criteria.getKey()).getJavaType() == Genre.class) {
+                    return format(criteria, root, query, builder, Genre.class);
+                }
                 // Operator equal
                 return builder.equal(root.get(criteria.getKey()), criteria.getValue());
             }
@@ -62,13 +74,21 @@ public class SpecificationSearch implements Specification<String> {
         return null;
     }
 
-    private Predicate format(Root<String> root, SearchCriteria searchCriteria, CriteriaBuilder builder) {
+    private Predicate format(SearchCriteria searchCriteria, Root<String> root, CriteriaQuery<?> query,
+            CriteriaBuilder builder, Class classType) {
+        Path<String> path;
+        if (classType == null) {
+            path = root.get(searchCriteria.getKey());
+        } else {
+            Join<String, String> join = root.join(searchCriteria.getKey(), JoinType.LEFT);
+            path = join.get(classType.getDeclaredFields()[1].getName());
+        }
         return builder.like(
                 builder.lower(
                         builder.function("replace", String.class,
                                 builder.function("replace", String.class,
                                         builder.function("replace", String.class,
-                                                root.get(searchCriteria.getKey()),
+                                                path,
                                                 builder.literal(" "),
                                                 builder.literal("")),
                                         builder.literal("-"),

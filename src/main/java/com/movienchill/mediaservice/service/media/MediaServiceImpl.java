@@ -1,7 +1,9 @@
 package com.movienchill.mediaservice.service.media;
 
 import com.movienchill.mediaservice.domain.dto.MediaDTO;
+import com.movienchill.mediaservice.domain.model.Genre;
 import com.movienchill.mediaservice.domain.model.Media;
+import com.movienchill.mediaservice.domain.repository.GenreDAO;
 import com.movienchill.mediaservice.domain.repository.MediaDAO;
 import com.movienchill.mediaservice.utils.Mapper;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -17,10 +20,17 @@ import java.util.List;
 public class MediaServiceImpl implements MediaService {
     @Autowired
     private MediaDAO mediaDAO;
+    @Autowired
+    private GenreDAO genreDAO;
 
     @Override
     public List<MediaDTO> findAll() {
         return null;
+    }
+
+    @Override
+    public List<Genre> getGenres() {
+        return genreDAO.findAll();
     }
 
     @Override
@@ -62,7 +72,13 @@ public class MediaServiceImpl implements MediaService {
     @Override
     public boolean create(MediaDTO entityDto) {
         // Mapping DTO to entity
+        List<Genre> listeGenre = new ArrayList<>();
+        for (String genre : entityDto.getGenres()) {
+            listeGenre.add(genreDAO.findByName(genre));
+        }
+        entityDto.setGenres(null);
         Media media = Mapper.map(entityDto, Media.class);
+        media.setGenres(listeGenre);
         // Saving
         this.save(media);
         return true;
@@ -71,7 +87,7 @@ public class MediaServiceImpl implements MediaService {
     @Override
     public void save(Media entity) {
         try {
-            mediaDAO.save(entity);
+            mediaDAO.saveAndFlush(entity);
         } catch (Exception e) {
             log.error("Error while saving the entity : {}", e.getMessage());
             throw e;

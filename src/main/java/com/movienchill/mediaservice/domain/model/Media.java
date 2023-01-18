@@ -21,9 +21,9 @@ public class Media {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "genre")
-    @ElementCollection
-    private List<String> genre;
+    @ManyToMany
+    @JoinTable(name = "media_genre", joinColumns = @JoinColumn(name = "media_id"), inverseJoinColumns = @JoinColumn(name = "genre_id"))
+    private List<Genre> genres;
 
     @Column(name = "release_date")
     private Date releaseDate;
