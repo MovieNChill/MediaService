@@ -1,10 +1,17 @@
 package com.movienchill.mediaservice.service.media;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.movienchill.mediaservice.domain.dto.MediaDTO;
+import com.movienchill.mediaservice.domain.dto.RecommendationDTO;
 import com.movienchill.mediaservice.domain.model.Media;
 import com.movienchill.mediaservice.domain.repository.MediaDAO;
+import com.movienchill.mediaservice.domain.repository.external.tmdb.TmdbDAO;
+import com.movienchill.mediaservice.utils.GlobalProperties;
 import com.movienchill.mediaservice.utils.Mapper;
+import com.movienchill.mediaservice.utils.WebService;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,6 +24,12 @@ import java.util.List;
 public class MediaServiceImpl implements MediaService {
     @Autowired
     private MediaDAO mediaDAO;
+
+    @Autowired
+    private TmdbDAO tmdbDAO;
+
+    @Autowired
+    private GlobalProperties globalProperties;
 
     @Override
     public List<MediaDTO> findAll() {
@@ -40,12 +53,6 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public MediaDTO findById(Long id) {
-        /*
-         * return mediaDAO.findById(id)
-         * .map(media -> Mapper.map(media, MediaDTO.class))
-         * .orElseThrow(() -> new
-         * RuntimeException("AUcun medi trouvé pour l'identifiant " + id))
-         */
         try {
             if (mediaDAO.findById(id).isPresent()) {
                 return Mapper.map(mediaDAO.findById(id).get(), MediaDTO.class);
@@ -54,6 +61,33 @@ public class MediaServiceImpl implements MediaService {
             }
         } catch (Exception e) {
             log.error("An error occured while retrieving media id=[{}] : {} ", id, e.getMessage());
+        }
+
+        return null;
+    }
+
+    @Override
+    public MediaDTO getRecommendation(RecommendationDTO recommendationDTO) {
+        // Call the Python Backend with the recommendationDTO
+        String response = WebService.post(globalProperties.getUrlRecommend(), recommendationDTO);
+
+        // Check the response and extraction of the name of media
+        if (response != null) {
+            // Extract media name
+
+            // Check database if media present
+            Media media = mediaDAO.findByName(response);
+            if(media != null) {
+                return Mapper.map(media, MediaDTO.class);
+            } else {
+                // Else -> call TMDb to get media info
+                Integer idMediaTmbd = tmdbDAO.findIdByName(response);
+                tmdbDAO.findByName(response);
+            }
+
+            // If no we get info from API and save it
+
+            // Return it to the controller
         }
 
         return null;
