@@ -3,9 +3,14 @@ package com.movienchill.mediaservice.controller;
 import com.movienchill.mediaservice.constants.Router;
 import com.movienchill.mediaservice.domain.dto.MediaDTO;
 import com.movienchill.mediaservice.domain.dto.PlatformDTO;
+import com.movienchill.mediaservice.domain.dto.SeenDTO;
+import com.movienchill.mediaservice.domain.model.Media;
+import com.movienchill.mediaservice.domain.model.Seen;
+import com.movienchill.mediaservice.domain.model.User;
 import com.movienchill.mediaservice.domain.specification.builder.SpecificationBuilder;
 import com.movienchill.mediaservice.service.media.MediaService;
 import com.movienchill.mediaservice.service.platform.PlatformService;
+import com.movienchill.mediaservice.service.seen.SeenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @CrossOrigin
@@ -29,10 +35,13 @@ public class MediaRestController {
 
     private final PlatformService platformService;
 
+    private final SeenService seenService;
+
     @Autowired
-    public MediaRestController(MediaService mediaService, PlatformService platformService) {
+    public MediaRestController(MediaService mediaService, PlatformService platformService, SeenService seenService) {
         this.mediaService = mediaService;
         this.platformService = platformService;
+        this.seenService = seenService;
     }
 
     /**
@@ -79,6 +88,11 @@ public class MediaRestController {
         }
     }
 
+    @GetMapping("/seen")
+    public Seen getMediaSeen(@RequestParam Long usr_id){
+        return seenService.findMediaByUsr(usr_id);
+    }
+
     /**
      * Endpoint to create a media
      *
@@ -97,6 +111,15 @@ public class MediaRestController {
         } catch (Exception e) {
             return new ResponseEntity<>(Boolean.FALSE, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PostMapping("/{id}/seen")
+    public Boolean addMediaSeen(@PathVariable String id, @RequestBody Map<String, String> content) {
+        Long usr_id = Long.parseLong(content.get("usr_id"));
+        MediaDTO media = mediaService.findById(Long.parseLong(id));
+        Long tmdb_id = Long.valueOf(platformService.researchId_TMDB(media.getName()));
+        return seenService.create(new SeenDTO(usr_id, media, tmdb_id));
+
     }
 
     /**

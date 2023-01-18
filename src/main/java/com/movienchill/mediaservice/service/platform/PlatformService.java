@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface PlatformService {
     public List<PlatformDTO> getPlatformInfo(String movieName);
+    public Integer researchId_TMDB(String movieName);
 }

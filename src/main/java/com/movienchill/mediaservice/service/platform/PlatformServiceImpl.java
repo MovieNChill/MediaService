@@ -46,7 +46,7 @@ public class PlatformServiceImpl implements PlatformService, IGenericService<Pla
 
     }
 
-    private Integer researchId_TMDB(String movieName){
+    public Integer researchId_TMDB(String movieName){
         String response = WebService.get(API_TMDB_URL+"/search/movie?api_key="+API_TMDB_KEY+"&query="+movieName);
         JSONObject ob = new JSONObject(response);
         JSONArray results = ob.getJSONArray("results");
