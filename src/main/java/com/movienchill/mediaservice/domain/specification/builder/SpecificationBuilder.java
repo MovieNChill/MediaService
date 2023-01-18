@@ -1,12 +1,10 @@
 package com.movienchill.mediaservice.domain.specification.builder;
 
-import com.movienchill.mediaservice.domain.model.Media;
 import com.movienchill.mediaservice.domain.specification.SpecificationSearch;
 import com.movienchill.mediaservice.domain.specification.search.SearchCriteria;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -35,10 +33,7 @@ public class SpecificationBuilder {
 
         Specification result = specifications.get(0);
         for (int i = 0; i < params.size(); i++) {
-            if (params.get(i).getOperation().equals("+"))
-                result = Specification.where(result).or(specifications.get(i));
-            else
-                result = Specification.where(result).and(specifications.get(i));
+            result = Specification.where(result).and(specifications.get(i));
         }
 
         return result;
@@ -61,10 +56,8 @@ public class SpecificationBuilder {
                 }
             }
             if (!matcher.find(0)) {
-                for (Field filed : Media.class.getDeclaredFields()) {
-                    if (filed.getType() == String.class)
-                        with(filed.getName(), "+", search);
-                }
+                // Search of keywords
+                with("*", ":", search);
             }
         } catch (Exception e) {
             log.error("An error occured while analysing the filter : {}", e.getMessage());
