@@ -203,5 +203,6 @@
     <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:2.2" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-test-autoconfigure:3.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-test:6.0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.json:json:20220924" level="project" />
   </component>
 </module>
