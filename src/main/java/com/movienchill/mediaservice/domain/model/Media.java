@@ -15,7 +15,7 @@ public class Media {
     @Column(nullable = false)
     private Long id;
 
-    @Column(name = "type", nullable = false)
+    @Column(name = "type")
     private String type;
 
     @Column(name = "name", nullable = false)
@@ -26,6 +26,7 @@ public class Media {
     private List<Genre> genres;
 
     @Column(name = "release_date")
+    @Temporal(TemporalType.DATE)
     private Date releaseDate;
 
     @Column(name = "director", nullable = false)

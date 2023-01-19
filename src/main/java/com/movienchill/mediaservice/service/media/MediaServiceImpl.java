@@ -92,7 +92,10 @@ public class MediaServiceImpl implements MediaService {
         if (response != null) {
             // Extract media name
             JSONObject jsonObject = new JSONObject(response);
-            return Arrays.stream(jsonObject.getJSONObject("recommended_movie").getJSONObject("title").toString().split(":")[1].split("}")).toList().get(0);
+            return Arrays.stream(
+                    jsonObject.getJSONObject("recommended_movie").getJSONObject("title").toString().split(":")[1]
+                            .split("}"))
+                    .toList().get(0);
 
             // If no we get info from API and save it
 
@@ -105,35 +108,38 @@ public class MediaServiceImpl implements MediaService {
     public boolean create(MediaDTO entityDto) {
         // get genres
         List<Genre> listeGenre = new ArrayList<>();
-        for (String genre : entityDto.getGenres()) {
-            listeGenre.add(genreDAO.findByName(genre));
-        }
+        if (entityDto.getGenres() != null)
+            for (String genre : entityDto.getGenres()) {
+                listeGenre.add(genreDAO.findByName(genre));
+            }
         entityDto.setGenres(null);
         // get or add writers
         List<Writer> listeWriter = new ArrayList<>();
-        for (String writerString : entityDto.getWriters()) {
-            Writer writer = writerDAO.findByName(writerString);
-            if (writer != null) {
-                listeWriter.add(writer);
-            } else {
-                writer = new Writer(writerString);
-                writerDAO.save(writer);
-                listeWriter.add(writer);
+        if (entityDto.getWriters() != null)
+            for (String writerString : entityDto.getWriters()) {
+                Writer writer = writerDAO.findByName(writerString);
+                if (writer != null) {
+                    listeWriter.add(writer);
+                } else {
+                    writer = new Writer(writerString);
+                    writerDAO.save(writer);
+                    listeWriter.add(writer);
+                }
             }
-        }
         entityDto.setWriters(null);
         // get or add stars
         List<Star> listeStar = new ArrayList<>();
-        for (String starString : entityDto.getStars()) {
-            Star star = starDAO.findByName(starString);
-            if (star != null) {
-                listeStar.add(star);
-            } else {
-                star = new Star(starString);
-                starDAO.save(star);
-                listeStar.add(star);
+        if (entityDto.getStars() != null)
+            for (String starString : entityDto.getStars()) {
+                Star star = starDAO.findByName(starString);
+                if (star != null) {
+                    listeStar.add(star);
+                } else {
+                    star = new Star(starString);
+                    starDAO.save(star);
+                    listeStar.add(star);
+                }
             }
-        }
         entityDto.setStars(null);
 
         // Mapping DTO to entity
