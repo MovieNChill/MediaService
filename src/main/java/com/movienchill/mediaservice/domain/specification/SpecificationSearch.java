@@ -1,13 +1,30 @@
 package com.movienchill.mediaservice.domain.specification;
 
+import com.movienchill.mediaservice.domain.metamodel.Media_;
+import com.movienchill.mediaservice.domain.model.Genre;
+import com.movienchill.mediaservice.domain.model.Media;
 import com.movienchill.mediaservice.domain.specification.search.SearchCriteria;
+
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.Bindable;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.validator.internal.util.privilegedactions.GetDeclaredField;
 import org.springframework.data.jpa.domain.Specification;
 
-public class SpecificationSearch implements Specification<String> {
+public class SpecificationSearch implements Specification<Media> {
     private SearchCriteria criteria;
 
     public SpecificationSearch(SearchCriteria criteria) {
@@ -15,38 +32,75 @@ public class SpecificationSearch implements Specification<String> {
     }
 
     @Override
-    public Predicate toPredicate(Root<String> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-        // Operator sup
-        if (criteria.getOperation().equalsIgnoreCase(">")) {
-            return builder.greaterThanOrEqualTo(root.<String>get(criteria.getKey()), criteria.getValue().toString());
-        } else if (criteria.getOperation().equalsIgnoreCase("<")) {
-            // Operation decrease
-            return builder.lessThanOrEqualTo(root.<String>get(criteria.getKey()), criteria.getValue().toString());
-        } else if (criteria.getOperation().equalsIgnoreCase(":")) {
-            if (root.get(criteria.getKey()).getJavaType() == String.class) {
-                // Operator like
-                return builder.like(
-                        builder.lower(
-                                builder.function("replace", String.class,
-                                        builder.function("replace", String.class,
-                                                builder.function("replace", String.class,
-                                                        root.get("name"),
-                                                        builder.literal(" "),
-                                                        builder.literal("")),
-                                                builder.literal("-"),
-                                                builder.literal("")),
-                                        builder.literal("-"),
-                                        builder.literal(""))),
-                        "%" + criteria.getValue().toString().toLowerCase()
-                                .replace("-", "")
-                                .replace(" ", "")
-                                .replace("_", "")
-                                + "%");
-            } else {
-                // Operator equal
-                return builder.equal(root.get(criteria.getKey()), criteria.getValue());
+    public Predicate toPredicate(Root<Media> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+        if (criteria.getOperation().equalsIgnoreCase(":")) {
+            // Operator like
+            if (criteria.getKey() == "*") {
+                SearchCriteria nameSearchCriteria = new SearchCriteria("name", ":", criteria.getValue());
+                SearchCriteria directorSearchCriteria = new SearchCriteria("director", ":", criteria.getValue());
+                SearchCriteria writersSearchCriteria = new SearchCriteria("writers", ":", criteria.getValue());
+                SearchCriteria starsSearchCriteria = new SearchCriteria("stars", ":", criteria.getValue());
+                SearchCriteria descriptionSearchCriteria = new SearchCriteria("description", ":", criteria.getValue());
+
+                Predicate namePredicate = format(nameSearchCriteria, root, query, builder);
+                Predicate starsPredicate = format(starsSearchCriteria, root, query, builder);
+                Predicate directorPredicate = format(directorSearchCriteria, root, query, builder);
+                Predicate writersPredicate = format(writersSearchCriteria, root, query, builder);
+                Predicate descriptionPredicate = format(descriptionSearchCriteria, root, query, builder);
+
+                query.where(builder.or(namePredicate,
+                        starsPredicate, directorPredicate, writersPredicate, descriptionPredicate));
+
+                Order[] orderList = {
+                        builder.desc(format(nameSearchCriteria, root, query, builder)),
+                        builder.desc(format(starsSearchCriteria, root, query, builder)),
+                        builder.desc(format(directorSearchCriteria, root, query, builder)),
+                        builder.desc(format(writersSearchCriteria, root, query, builder)),
+                        builder.desc(format(descriptionSearchCriteria, root, query, builder)),
+                };
+
+                query.orderBy(orderList);
+
+                return query.getRestriction();
             }
+            return format(criteria, root, query, builder);
+            // Operator equal
+            // return builder.equal(root.get(criteria.getKey()), criteria.getValue());
         }
         return null;
+    }
+
+    private Predicate format(SearchCriteria searchCriteria, Root<Media> root, CriteriaQuery<?> query,
+            CriteriaBuilder builder) {
+        Path<Media> path;
+        Bindable<Object> classType = (root.get(searchCriteria.getKey()).getModel());
+        if (classType.toString().contains("MANY_TO_MANY"))
+            path = root.join(searchCriteria.getKey(), JoinType.LEFT)
+                    .get(root.get(searchCriteria.getKey()).getJavaType().getDeclaredFields()[1].getName());
+        else
+            path = root.get(searchCriteria.getKey());
+        String string = "%" + criteria.getValue().toString().toLowerCase()
+                .replace("-", "")
+                .replace(" ", "")
+                .replace("_", "")
+                + "%";
+        Expression<String> expression = builder.lower(builder.function("replace", String.class,
+                builder.function("replace", String.class,
+                        builder.function("replace", String.class,
+                                path,
+                                builder.literal(" "),
+                                builder.literal("")),
+                        builder.literal("-"),
+                        builder.literal("")),
+                builder.literal("-"),
+                builder.literal("")));
+
+        if (classType.toString().contains("ELEMENT_COLLECTION")) {
+            return builder.isMember('%' + searchCriteria.getValue().toString() + '%',
+                    root.get(searchCriteria.getKey()));
+        }
+        // return builder.isMember(searchCriteria.getValue(),
+        // root.get(searchCriteria.getKey()));
+        return builder.like(expression, string);
     }
 }
