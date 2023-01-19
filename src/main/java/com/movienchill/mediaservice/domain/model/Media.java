@@ -31,16 +31,13 @@ public class Media {
     @Column(name = "director", nullable = false)
     private String director;
 
-    @Column(name = "writers")
-    @ElementCollection
-    private List<String> writers;
+    @ManyToMany
+    @JoinTable(name = "media_writer", joinColumns = @JoinColumn(name = "media_id"), inverseJoinColumns = @JoinColumn(name = "writer_id"))
+    private List<Writer> writers;
 
-    @Column(name = "languages", insertable = false, updatable = false)
-    private String writersString; // No need for setter
-
-    @Column(name = "stars")
-    @ElementCollection
-    private List<String> stars;
+    @ManyToMany
+    @JoinTable(name = "media_star", joinColumns = @JoinColumn(name = "media_id"), inverseJoinColumns = @JoinColumn(name = "star_id"))
+    private List<Star> stars;
 
     @Column(name = "description", length = 2048)
     private String description;

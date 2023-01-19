@@ -3,8 +3,12 @@ package com.movienchill.mediaservice.service.media;
 import com.movienchill.mediaservice.domain.dto.MediaDTO;
 import com.movienchill.mediaservice.domain.model.Genre;
 import com.movienchill.mediaservice.domain.model.Media;
+import com.movienchill.mediaservice.domain.model.Star;
+import com.movienchill.mediaservice.domain.model.Writer;
 import com.movienchill.mediaservice.domain.repository.GenreDAO;
 import com.movienchill.mediaservice.domain.repository.MediaDAO;
+import com.movienchill.mediaservice.domain.repository.StarDAO;
+import com.movienchill.mediaservice.domain.repository.WriterDAO;
 import com.movienchill.mediaservice.utils.Mapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,10 @@ public class MediaServiceImpl implements MediaService {
     private MediaDAO mediaDAO;
     @Autowired
     private GenreDAO genreDAO;
+    @Autowired
+    private WriterDAO writerDAO;
+    @Autowired
+    private StarDAO starDAO;
 
     @Override
     public List<MediaDTO> findAll() {
@@ -39,7 +47,7 @@ public class MediaServiceImpl implements MediaService {
             List<Media> listMedia = mediaDAO.findAll(spec, pageable);
 
             if (listMedia != null) {
-                return Mapper.mapList(listMedia.stream().toList(), MediaDTO.class);
+                return Mapper.mapList(listMedia, MediaDTO.class);
             }
         } catch (Exception e) {
             log.error("An error occured while retrieving medias : {}", e.getMessage());
@@ -71,14 +79,44 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public boolean create(MediaDTO entityDto) {
-        // Mapping DTO to entity
+        // get genres
         List<Genre> listeGenre = new ArrayList<>();
         for (String genre : entityDto.getGenres()) {
             listeGenre.add(genreDAO.findByName(genre));
         }
         entityDto.setGenres(null);
+        // get or add writers
+        List<Writer> listeWriter = new ArrayList<>();
+        for (String writerString : entityDto.getWriters()) {
+            Writer writer = writerDAO.findByName(writerString);
+            if (writer != null) {
+                listeWriter.add(writer);
+            } else {
+                writer = new Writer(writerString);
+                writerDAO.save(writer);
+                listeWriter.add(writer);
+            }
+        }
+        entityDto.setWriters(null);
+        // get or add stars
+        List<Star> listeStar = new ArrayList<>();
+        for (String starString : entityDto.getStars()) {
+            Star star = starDAO.findByName(starString);
+            if (star != null) {
+                listeStar.add(star);
+            } else {
+                star = new Star(starString);
+                starDAO.save(star);
+                listeStar.add(star);
+            }
+        }
+        entityDto.setStars(null);
+
+        // Mapping DTO to entity
         Media media = Mapper.map(entityDto, Media.class);
         media.setGenres(listeGenre);
+        media.setWriters(listeWriter);
+        media.setStars(listeStar);
         // Saving
         this.save(media);
         return true;
