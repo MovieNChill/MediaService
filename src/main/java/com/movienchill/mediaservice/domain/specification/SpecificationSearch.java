@@ -90,7 +90,7 @@ public class SpecificationSearch implements Specification<Media> {
                 builder.literal("")));
 
         if (classType.toString().contains("ELEMENT_COLLECTION")) {
-            return builder.isMember(searchCriteria.getValue().toString().toLowerCase(),
+            return builder.isMember(searchCriteria.getValue(),
                     root.get(searchCriteria.getKey()));
         }
         // return builder.isMember(searchCriteria.getValue(),
