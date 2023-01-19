@@ -21,9 +21,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@CrossOrigin
+
 @RestController
+
 @RequestMapping(Router.BASE_MEDIA)
+@CrossOrigin(origins = "*")
 public class MediaRestController {
     private final Integer DEFAULT_PAGE_VALUE = 0;
     private final Integer DEFAULT_SIZE_VALUE = 4;
@@ -55,7 +57,9 @@ public class MediaRestController {
      * @return a list of media
      */
 
+
     @GetMapping("/genres")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<List<String>> getGenres() {
         List<String> genres = mediaService.getGenres().stream().map(Genre::getName).collect(Collectors.toList());
 
