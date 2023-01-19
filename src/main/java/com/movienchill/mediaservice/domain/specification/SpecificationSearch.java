@@ -38,17 +38,24 @@ public class SpecificationSearch implements Specification<Media> {
             if (criteria.getKey() == "*") {
                 SearchCriteria nameSearchCriteria = new SearchCriteria("name", ":", criteria.getValue());
                 SearchCriteria directorSearchCriteria = new SearchCriteria("director", ":", criteria.getValue());
+                SearchCriteria writersSearchCriteria = new SearchCriteria("writers", ":", criteria.getValue());
+                SearchCriteria starsSearchCriteria = new SearchCriteria("stars", ":", criteria.getValue());
                 SearchCriteria descriptionSearchCriteria = new SearchCriteria("description", ":", criteria.getValue());
 
                 Predicate namePredicate = format(nameSearchCriteria, root, query, builder);
+                Predicate starsPredicate = format(starsSearchCriteria, root, query, builder);
                 Predicate directorPredicate = format(directorSearchCriteria, root, query, builder);
+                Predicate writersPredicate = format(writersSearchCriteria, root, query, builder);
                 Predicate descriptionPredicate = format(descriptionSearchCriteria, root, query, builder);
 
-                query.where(builder.or(namePredicate, directorPredicate, descriptionPredicate));
+                query.where(builder.or(namePredicate,
+                        starsPredicate, directorPredicate, writersPredicate, descriptionPredicate));
 
                 Order[] orderList = {
                         builder.desc(format(nameSearchCriteria, root, query, builder)),
+                        builder.desc(format(starsSearchCriteria, root, query, builder)),
                         builder.desc(format(directorSearchCriteria, root, query, builder)),
+                        builder.desc(format(writersSearchCriteria, root, query, builder)),
                         builder.desc(format(descriptionSearchCriteria, root, query, builder)),
                 };
 
@@ -67,7 +74,6 @@ public class SpecificationSearch implements Specification<Media> {
             CriteriaBuilder builder) {
         Path<Media> path;
         Bindable<Object> classType = (root.get(searchCriteria.getKey()).getModel());
-        System.out.println(root.get(searchCriteria.getKey()));
         if (classType.toString().contains("MANY_TO_MANY"))
             path = root.join(searchCriteria.getKey(), JoinType.LEFT)
                     .get(root.get(searchCriteria.getKey()).getJavaType().getDeclaredFields()[1].getName());
