@@ -129,9 +129,8 @@ public class MediaRestController {
      * @return the recommended media
      */
     @PostMapping(Router.RECOMMEND)
-    public ResponseEntity<MediaDTO> getRecommendation(@RequestBody @Validated RecommendationDTO recommendationDTO) {
-        mediaService.getRecommendation(recommendationDTO);
-        return null;
+    public ResponseEntity<String> getRecommendation(@RequestBody @Validated RecommendationDTO recommendationDTO) {
+        return new ResponseEntity<>(mediaService.getRecommendation(recommendationDTO), HttpStatus.OK);
     }
 
     /**

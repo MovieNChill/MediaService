@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class RecommendationDTO {
-    private Long userId;
+    private Long user_id;
     private String desired_genre;
 }

@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -67,29 +68,20 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public MediaDTO getRecommendation(RecommendationDTO recommendationDTO) {
+    public String getRecommendation(RecommendationDTO recommendationDTO) {
         // Call the Python Backend with the recommendationDTO
         String response = WebService.post(globalProperties.getUrlRecommend(), recommendationDTO);
 
         // Check the response and extraction of the name of media
         if (response != null) {
             // Extract media name
-
-            // Check database if media present
-            Media media = mediaDAO.findByName(response);
-            if(media != null) {
-                return Mapper.map(media, MediaDTO.class);
-            } else {
-                // Else -> call TMDb to get media info
-                Integer idMediaTmbd = tmdbDAO.findIdByName(response);
-                tmdbDAO.findByName(response);
-            }
+            JSONObject jsonObject = new JSONObject(response);
+            return Arrays.stream(jsonObject.getJSONObject("recommended_movie").getJSONObject("title").toString().split(":")[1].split("}")).toList().get(0);
 
             // If no we get info from API and save it
 
             // Return it to the controller
         }
-
         return null;
     }
 
