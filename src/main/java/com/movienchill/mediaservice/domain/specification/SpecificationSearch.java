@@ -51,15 +51,16 @@ public class SpecificationSearch implements Specification<Media> {
                 query.where(builder.or(namePredicate,
                         starsPredicate, directorPredicate, writersPredicate, descriptionPredicate));
 
-                Order[] orderList = {
-                        builder.desc(format(nameSearchCriteria, root, query, builder)),
-                        builder.desc(format(starsSearchCriteria, root, query, builder)),
-                        builder.desc(format(directorSearchCriteria, root, query, builder)),
-                        builder.desc(format(writersSearchCriteria, root, query, builder)),
-                        builder.desc(format(descriptionSearchCriteria, root, query, builder)),
-                };
+                query.distinct(true);
+                // Order[] orderList = {
+                // builder.desc(format(nameSearchCriteria, root, query, builder)),
+                // builder.desc(format(starsSearchCriteria, root, query, builder)),
+                // builder.desc(format(directorSearchCriteria, root, query, builder)),
+                // builder.desc(format(writersSearchCriteria, root, query, builder)),
+                // builder.desc(format(descriptionSearchCriteria, root, query, builder)),
+                // };
 
-                query.orderBy(orderList);
+                // query.orderBy(orderList);
 
                 return query.getRestriction();
             }
