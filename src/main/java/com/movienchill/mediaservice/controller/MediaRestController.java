@@ -38,8 +38,6 @@ public class MediaRestController {
         this.mediaService = mediaService;
         this.platformService = platformService;
     }
-     * @return a list of media
-     * @paramize The number of element in the page
 
     @GetMapping("/genres")
     @CrossOrigin(origins = "*")
@@ -66,8 +64,8 @@ public class MediaRestController {
      * @param search A string with the multiple filter. Need to be under the form
      *               "key:value".
      * @param page   The current number of the page
-     * @paramize The number of element in the page
      * @return a list of media
+     * @paramize The number of element in the page
      */
     @GetMapping
     public ResponseEntity<List<MediaDTO>> getMediaWithFilter(
