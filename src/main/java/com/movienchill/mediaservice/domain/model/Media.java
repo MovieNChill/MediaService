@@ -35,6 +35,9 @@ public class Media {
     @ElementCollection
     private List<String> writers;
 
+    @Column(name = "languages", insertable = false, updatable = false)
+    private String writersString; // No need for setter
+
     @Column(name = "stars")
     @ElementCollection
     private List<String> stars;

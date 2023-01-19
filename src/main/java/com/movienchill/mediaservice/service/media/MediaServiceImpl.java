@@ -34,7 +34,7 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public List<MediaDTO> findAllWithFilter(Specification<String> spec, Pageable pageable) {
+    public List<MediaDTO> findAllWithFilter(Specification<Media> spec, Pageable pageable) {
         try {
             List<Media> listMedia = mediaDAO.findAll(spec, pageable);
 

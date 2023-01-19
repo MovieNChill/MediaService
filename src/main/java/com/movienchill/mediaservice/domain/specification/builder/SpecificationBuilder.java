@@ -1,5 +1,6 @@
 package com.movienchill.mediaservice.domain.specification.builder;
 
+import com.movienchill.mediaservice.domain.model.Media;
 import com.movienchill.mediaservice.domain.specification.SpecificationSearch;
 import com.movienchill.mediaservice.domain.specification.search.SearchCriteria;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SpecificationBuilder {
     private final List<SearchCriteria> params;
-    private final String PATTERN_SEARCH_REGEX = "(\\w+?)(:|<|>)(\\w+?),";
+    private final String PATTERN_SEARCH_REGEX = "(\\w+?)(:|<|>)(([0-9]+(?:[.][0-9]+))|[a-zA-Z0-9_ àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ¨*()Ã©-]+?|\\w+?-\\w+?-\\w+?)\\,";
 
     public SpecificationBuilder() {
         params = new ArrayList<>();
@@ -25,13 +26,14 @@ public class SpecificationBuilder {
         return this;
     }
 
-    public Specification<String> build() {
+    public Specification<Media> build() {
         if (params.size() == 0)
             return null;
 
-        List<Specification> specifications = params.stream().map(SpecificationSearch::new).collect(Collectors.toList());
+        List<Specification<Media>> specifications = params.stream().map(SpecificationSearch::new)
+                .collect(Collectors.toList());
 
-        Specification result = specifications.get(0);
+        Specification<Media> result = specifications.get(0);
         for (int i = 0; i < params.size(); i++) {
             result = Specification.where(result).and(specifications.get(i));
         }
@@ -39,7 +41,7 @@ public class SpecificationBuilder {
         return result;
     }
 
-    public Specification<String> searchFilter(String search) {
+    public Specification<Media> searchFilter(String search) {
         try {
             // Search of filters
             Pattern pattern = Pattern.compile(PATTERN_SEARCH_REGEX, Pattern.CASE_INSENSITIVE);

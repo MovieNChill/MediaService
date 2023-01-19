@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface MediaDAO extends JpaRepository<Media, Long> {
-    List<Media> findAll(Specification<String> spec, Pageable pageable);
+    List<Media> findAll(Specification<Media> spec, Pageable pageable);
 }

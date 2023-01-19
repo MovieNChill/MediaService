@@ -4,6 +4,7 @@ import com.movienchill.mediaservice.constants.Router;
 import com.movienchill.mediaservice.domain.dto.MediaDTO;
 import com.movienchill.mediaservice.domain.dto.PlatformDTO;
 import com.movienchill.mediaservice.domain.model.Genre;
+import com.movienchill.mediaservice.domain.model.Media;
 import com.movienchill.mediaservice.domain.specification.builder.SpecificationBuilder;
 import com.movienchill.mediaservice.service.media.MediaService;
 import com.movienchill.mediaservice.service.platform.PlatformService;
@@ -73,7 +74,7 @@ public class MediaRestController {
 
         // Filter analysis and Specification build
         SpecificationBuilder specificationBuilder = new SpecificationBuilder();
-        Specification<String> spec = null;
+        Specification<Media> spec = null;
         if (search != null) {
             spec = specificationBuilder.searchFilter(search);
         }
