@@ -7,10 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import javax.sql.rowset.serial.SerialArray;
 
 @Slf4j
 public class SpecificationBuilder {
@@ -50,16 +53,34 @@ public class SpecificationBuilder {
                 // Case where values to search are Boolean
                 if (matcher.group(3).equals("true")) {
                     with(matcher.group(1), matcher.group(2), Boolean.TRUE);
+
+                    search = search.replaceFirst(matcher.group(1), "");
+                    search = search.replaceFirst(matcher.group(2), "");
+                    search = search.replaceFirst(",", "");
                 } else if (matcher.group(3).equals("false")) {
                     with(matcher.group(1), matcher.group(2), Boolean.FALSE);
+
+                    search = search.replaceFirst(matcher.group(1), "");
+                    search = search.replaceFirst(matcher.group(2), "");
+                    search = search.replaceFirst(",", "");
                 } else {
                     // Case where values are String
                     with(matcher.group(1), matcher.group(2), matcher.group(3));
+
+                    search = search.replaceFirst(matcher.group(1), "");
+                    search = search.replaceFirst(matcher.group(2), "");
+                    search = search.replaceFirst(matcher.group(3), "");
+                    search = search.replaceFirst(",", "");
                 }
             }
-            if (!matcher.find(0)) {
-                // Search of keywords
-                with("*", ":", search);
+            if (!search.isEmpty()) {
+                if (search.contains(",")) {
+                    for (String s : search.split(",")) {
+                        with("*", ":", s);
+                    }
+                } else {
+                    with("*", ":", search);
+                }
             }
         } catch (Exception e) {
             log.error("An error occured while analysing the filter : {}", e.getMessage());
