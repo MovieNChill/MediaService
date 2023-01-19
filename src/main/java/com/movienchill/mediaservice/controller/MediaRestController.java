@@ -57,7 +57,6 @@ public class MediaRestController {
      * @return a list of media
      */
 
-
     @GetMapping("/genres")
     @CrossOrigin(origins = "*")
     public ResponseEntity<List<String>> getGenres() {
@@ -128,11 +127,12 @@ public class MediaRestController {
      * @return A response entity True if success else False
      */
     @PostMapping("/list")
-    public ResponseEntity<Boolean> createMedias(@RequestBody @Validated List<MediaDTO> mediaDTO) {
+    public ResponseEntity<Boolean> createMedias(@RequestBody @Validated List<MediaDTO> mediasDTO) {
         Boolean result = true;
         try {
-            for (MediaDTO media : mediaDTO) {
-                if (!mediaService.create(media)) {
+            for (MediaDTO mediaDTO : mediasDTO) {
+                log.info("Creating Media " + mediasDTO.indexOf(mediaDTO) + "/" + mediasDTO.size());
+                if (!mediaService.create(mediaDTO)) {
                     result = false;
                 }
             }
