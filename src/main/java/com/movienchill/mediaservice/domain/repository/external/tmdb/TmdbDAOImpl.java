@@ -1,52 +1,28 @@
-package com.movienchill.mediaservice.service.platform;
+package com.movienchill.mediaservice.domain.repository.external.tmdb;
 
+import com.movienchill.mediaservice.domain.dto.MediaDTO;
 import com.movienchill.mediaservice.domain.dto.PlatformDTO;
-import com.movienchill.mediaservice.domain.model.Platform;
-import com.movienchill.mediaservice.service.IGenericService;
+import com.movienchill.mediaservice.utils.GlobalProperties;
 import com.movienchill.mediaservice.utils.WebService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-
 @Slf4j
-@Service
-public class PlatformServiceImpl implements PlatformService, IGenericService<Platform, PlatformDTO> {
-    private final String API_TMDB_URL = "https://api.themoviedb.org/3/";
-    private final String API_TMDB_KEY = "729743283360120d3d45dc0dbb666a58";
+@Repository
+public class TmdbDAOImpl implements TmdbDAO {
+    @Autowired
+    private GlobalProperties globalProperties;
 
     @Override
-    public List<PlatformDTO> findAll() {
-        return null;
-    }
-
-    @Override
-    public PlatformDTO findById(Long id) {
-        return null;
-    }
-
-    @Override
-    public boolean create(PlatformDTO entityDto) {
-        return false;
-    }
-
-    @Override
-    public void save(Platform entity) {
-
-    }
-
-    @Override
-    public void delete(Long id) {
-
-    }
-
-    private Integer researchId_TMDB(String movieName) {
-        String response = WebService.get(API_TMDB_URL + "/search/movie?api_key=" + API_TMDB_KEY + "&query=" + movieName);
+    public Integer findIdByName(String name) {
+        String response = WebService.get(globalProperties.getUrlTmdb() + "/search/movie?api_key=" + globalProperties.getApiKey() + "&query=" + name);
         JSONObject ob = new JSONObject(response);
         JSONArray results = ob.getJSONArray("results");
         if (results.length() != 0) {
@@ -54,26 +30,12 @@ public class PlatformServiceImpl implements PlatformService, IGenericService<Pla
         } else {
             return null;
         }
-
     }
 
-    private int findInListByName(List<PlatformDTO> list, String name) {
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getName().equals(name)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public List<PlatformDTO> getPlatformInfo(String movieName) {
-        Integer id_TMDB = researchId_TMDB(movieName);
+    @Override
+    public List<PlatformDTO> findPlatformInfoById(Integer id) {
         List<PlatformDTO> listPlateform = new ArrayList<>();
-        if (id_TMDB == null) {
-            return listPlateform;
-        }
-
-        String response = WebService.get(API_TMDB_URL + "/movie/" + id_TMDB + "/watch/providers?api_key=" + API_TMDB_KEY);
+        String response = WebService.get(globalProperties.getUrlTmdb() + "/movie/" + id + "/watch/providers?api_key=" + globalProperties.getApiKey());
         JSONObject ob = new JSONObject(response);
         JSONObject results = ob.getJSONObject("results");
         Iterator<String> keys = results.keys();
@@ -95,8 +57,21 @@ public class PlatformServiceImpl implements PlatformService, IGenericService<Pla
                     }
                 }
             }
-
         }
         return listPlateform;
+    }
+
+    @Override
+    public MediaDTO findByName(String name) {
+        return null;
+    }
+
+    private int findInListByName(List<PlatformDTO> list, String name){
+        for (int i=0; i < list.size(); i++) {
+            if (list.get(i).getName().equals(name)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

@@ -11,5 +11,6 @@ public class Router {
     public static final String BASE_NOTE = API_START + "/notes";
     public static final String BASE_PLATFORM = API_START + "/plateforms";
 
-    /* */
+    /* OPTIONS */
+    public static final String RECOMMEND = "/recommend";
 }

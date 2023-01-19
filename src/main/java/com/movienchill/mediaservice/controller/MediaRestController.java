@@ -3,6 +3,7 @@ package com.movienchill.mediaservice.controller;
 import com.movienchill.mediaservice.constants.Router;
 import com.movienchill.mediaservice.domain.dto.MediaDTO;
 import com.movienchill.mediaservice.domain.dto.PlatformDTO;
+import com.movienchill.mediaservice.domain.dto.RecommendationDTO;
 import com.movienchill.mediaservice.domain.model.Genre;
 import com.movienchill.mediaservice.domain.model.Media;
 import com.movienchill.mediaservice.domain.specification.builder.SpecificationBuilder;
@@ -21,9 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-
 @RestController
-
 @RequestMapping(Router.BASE_MEDIA)
 @CrossOrigin(origins = "*")
 public class MediaRestController {
@@ -38,6 +37,20 @@ public class MediaRestController {
     public MediaRestController(MediaService mediaService, PlatformService platformService) {
         this.mediaService = mediaService;
         this.platformService = platformService;
+    }
+     * @return a list of media
+     * @paramize The number of element in the page
+
+    @GetMapping("/genres")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<List<String>> getGenres() {
+        List<String> genres = mediaService.getGenres().stream().map(Genre::getName).collect(Collectors.toList());
+
+        if (genres != null) {
+            return new ResponseEntity<>(genres, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -56,19 +69,6 @@ public class MediaRestController {
      * @paramize The number of element in the page
      * @return a list of media
      */
-
-    @GetMapping("/genres")
-    @CrossOrigin(origins = "*")
-    public ResponseEntity<List<String>> getGenres() {
-        List<String> genres = mediaService.getGenres().stream().map(Genre::getName).collect(Collectors.toList());
-
-        if (genres != null) {
-            return new ResponseEntity<>(genres, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @GetMapping
     public ResponseEntity<List<MediaDTO>> getMediaWithFilter(
             @RequestParam(value = "page", required = false) Integer page,
@@ -170,10 +170,22 @@ public class MediaRestController {
     }
 
     /**
+     * Endpoint to get a media Recommendation.
+     *
+     * @param recommendationDTO The DTO
+     * @return the recommended media
+     */
+    @PostMapping(Router.RECOMMEND)
+    public ResponseEntity<String> getRecommendation(@RequestBody @Validated RecommendationDTO recommendationDTO) {
+        return new ResponseEntity<>(mediaService.getRecommendation(recommendationDTO), HttpStatus.OK);
+    }
+
+    /**
      * ONLY TO TEST
      * // TODO DELETE
      */
     @DeleteMapping("/{id}")
+
     public Boolean deleteMediaById(@PathVariable String id) {
         mediaService.delete(Long.parseLong(id));
         return true;
