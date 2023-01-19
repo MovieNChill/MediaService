@@ -3,6 +3,7 @@ package com.movienchill.mediaservice.controller;
 import com.movienchill.mediaservice.constants.Router;
 import com.movienchill.mediaservice.domain.dto.MediaDTO;
 import com.movienchill.mediaservice.domain.dto.PlatformDTO;
+import com.movienchill.mediaservice.domain.dto.RecommendationDTO;
 import com.movienchill.mediaservice.domain.model.Genre;
 import com.movienchill.mediaservice.domain.model.Media;
 import com.movienchill.mediaservice.domain.specification.builder.SpecificationBuilder;
@@ -63,8 +64,8 @@ public class MediaRestController {
      * @param search A string with the multiple filter. Need to be under the form
      *               "key:value".
      * @param page   The current number of the page
-     * @paramize The number of element in the page
      * @return a list of media
+     * @paramize The number of element in the page
      * @paramize The number of element in the page
      */
     @GetMapping
@@ -168,6 +169,7 @@ public class MediaRestController {
 
     /**
      * Endpoint to get a media Recommendation.
+     *
      * @param recommendationDTO The DTO
      * @return the recommended media
      */

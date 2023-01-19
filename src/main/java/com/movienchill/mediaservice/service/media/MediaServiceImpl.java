@@ -1,19 +1,17 @@
 package com.movienchill.mediaservice.service.media;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.movienchill.mediaservice.domain.dto.MediaDTO;
-import com.movienchill.mediaservice.domain.model.Genre;
 import com.movienchill.mediaservice.domain.dto.RecommendationDTO;
+import com.movienchill.mediaservice.domain.model.Genre;
 import com.movienchill.mediaservice.domain.model.Media;
 import com.movienchill.mediaservice.domain.model.Star;
 import com.movienchill.mediaservice.domain.model.Writer;
 import com.movienchill.mediaservice.domain.repository.GenreDAO;
 import com.movienchill.mediaservice.domain.repository.MediaDAO;
-import com.movienchill.mediaservice.domain.repository.external.tmdb.TmdbDAO;
-import com.movienchill.mediaservice.utils.GlobalProperties;
 import com.movienchill.mediaservice.domain.repository.StarDAO;
 import com.movienchill.mediaservice.domain.repository.WriterDAO;
+import com.movienchill.mediaservice.domain.repository.external.tmdb.TmdbDAO;
+import com.movienchill.mediaservice.utils.GlobalProperties;
 import com.movienchill.mediaservice.utils.Mapper;
 import com.movienchill.mediaservice.utils.WebService;
 import lombok.extern.slf4j.Slf4j;

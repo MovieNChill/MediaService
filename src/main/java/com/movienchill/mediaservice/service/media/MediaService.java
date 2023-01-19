@@ -12,6 +12,8 @@ import java.util.List;
 
 public interface MediaService extends IGenericService<Media, MediaDTO> {
     public List<MediaDTO> findAllWithFilter(Specification<Media> spec, Pageable pageable);
+
     public List<Genre> getGenres();
+
     public String getRecommendation(RecommendationDTO recommendationDTO);
 }
